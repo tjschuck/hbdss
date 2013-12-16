@@ -13,6 +13,8 @@ var context = canvas.getContext('2d');
 var scott = new Scott();
 var gameObjects = [scott];
 var new_phone_timer = 0;
+var num_iphones = 0;
+var num_androids = 0;
 
 // images
 var background;
@@ -38,7 +40,7 @@ var update = function(delta) {
 
   if (new_phone_timer > 500) {
     new_phone_timer = 0;
-    if (random_between(1, 8) == 1) {
+    if (random_between(1, 6) == 1) {
       gameObjects.push(new Android());
     } else {
       gameObjects.push(new iPhone());
@@ -67,11 +69,10 @@ var random_between = function (min, max) {
 
 function Scott() {
   this.width = 50;
-  this.height = 50;
+  this.height = 120;
   this.x = 200;
   this.y = height - this.height;
-  this.x_speed = 0;
-  this.y_speed = 0;
+  this.direction = 'left';
 }
 
 Scott.prototype.overlapping = function(device) {
@@ -101,8 +102,18 @@ Scott.prototype.overlapping = function(device) {
 };
 
 Scott.prototype.render = function() {
-  context.fillStyle = "#0000FF";
-  context.fillRect(this.x, this.y, this.width, this.height);
+  var sprite_toggle = (Math.floor(this.x / 40) % 2) == 0 ? 0 : 0.5
+  if (this.direction == 'right') {
+    context.drawImage(scott_right, scott_right.x + (scott_right.width * sprite_toggle),
+                                   scott_right.y,
+                                   scott_right.width / 2, scott_right.height,
+                                   this.x, this.y, this.width, this.height);
+  } else {
+    context.drawImage(scott_left, scott_left.x + (scott_left.width * sprite_toggle),
+                                  scott_left.y,
+                                  scott_left.width / 2, scott_left.height,
+                                  this.x, this.y, this.width, this.height);
+  }
 };
 
 Scott.prototype.move = function(x, y) {
@@ -127,9 +138,11 @@ Scott.prototype.update = function() {
   for (var key in keysDown) {
     var value = Number(key);
     if (value == 37) {
-      this.move(-4, 0);
+      this.direction = 'left';
+      this.move(-6, 0);
     } else if (value == 39) {
-      this.move(4, 0);
+      this.direction = 'right'
+      this.move(6, 0);
     } else {
       this.move(0, 0);
     }
@@ -183,6 +196,7 @@ iPhone.prototype.update = function() {
   if (scott.overlapping(this)) {
     this.phone.destroy();
     scott.move(0, 25);
+    num_iphones++;
   };
 };
 
@@ -201,6 +215,7 @@ Android.prototype.update = function() {
   if (scott.overlapping(this)) {
     this.phone.destroy();
     scott.move(0, -50);
+    num_androids++;
   };
 };
 

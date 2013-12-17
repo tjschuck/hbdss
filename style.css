@@ -5,8 +5,15 @@ html, body {
   height: 100%;
   overflow: hidden;
   background: #000;
+  color: #ccc;
+  text-align: center;
+  font-family: georgia;
+  font-style: italic;
 }
 canvas {
   display: block;
   margin: 20px auto;
+}
+p {
+  display: block;
 }

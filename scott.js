@@ -1,11 +1,14 @@
 var animate = window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
   window.mozRequestAnimationFrame ||
+  window.msRequestAnimationFrame ||
   function(callback) { window.setTimeout(callback, 1000/60) };
+
+var stop_animation = false;
 
 var canvas = document.createElement('canvas');
 var width = 600;
-var height = 600;
+var height = 700;
 canvas.width = width;
 canvas.height = height;
 var context = canvas.getContext('2d');
@@ -15,6 +18,7 @@ var gameObjects = [scott];
 var new_phone_timer = 0;
 var num_iphones = 0;
 var num_androids = 0;
+var start_time = Date.now();
 
 // images
 var background;
@@ -32,7 +36,13 @@ var step = function(timestamp) {
 
   this._lastTimestamp = timestamp;
 
-  animate(step);
+  if (scott.y < 100) {
+    you_win();
+  }
+
+  if (!stop_animation) {
+    animate(step);
+  }
 };
 
 var update = function(delta) {
@@ -59,6 +69,30 @@ var render = function() {
     gameObjects[i].render();
   }
 };
+
+var you_win = function() {
+  stop_animation = true;
+  for (i = 1; i < gameObjects.length; i++) {
+    gameObjects[i].phone.destroy();
+  }
+  scott.x = 15;
+  scott.y = 10;
+  var end_time = Date.now();
+  var flip = 0;
+  setInterval(function(){
+    context.drawImage(background, 0, 0);
+    context.drawImage(document.getElementById("ending"), 120, 50);
+    flip = (flip == 0 ? 0.5 : 0);
+    context.drawImage(scott_right, scott_right.x + (scott_right.width * flip),
+                                   scott_right.y,
+                                   scott_right.width / 2, scott_right.height,
+                                   scott.x, scott.y, scott.width, scott.height);
+    context.fillStyle = "black";
+    context.font = "bold 16px Arial";
+    context.fillText("You climbed the mountain in " + Math.floor((end_time - start_time) / 1000) + " seconds!", 20, 630);
+    context.fillText("You collected " + num_androids + " Androids and " + num_iphones + " iPhones.", 20, 660);
+  }, 1000);
+}
 
 var random_between = function (min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;

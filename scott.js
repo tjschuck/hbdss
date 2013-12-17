@@ -91,7 +91,7 @@ var you_win = function() {
     context.font = "bold 16px Arial";
     context.fillText("You climbed the mountain in " + Math.floor((end_time - start_time) / 1000) + " seconds!", 20, 630);
     context.fillText("You collected " + num_androids + " Androids and " + num_iphones + " iPhones.", 20, 660);
-  }, 1000);
+  }, 500);
 }
 
 var random_between = function (min, max) {
